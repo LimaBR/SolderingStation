@@ -18,7 +18,6 @@
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <cpp/start.hpp>
 #include "main.h"
 #include "usb_device.h"
 
@@ -47,6 +46,9 @@ I2S_HandleTypeDef hi2s2;
 I2S_HandleTypeDef hi2s3;
 
 SPI_HandleTypeDef hspi1;
+SPI_HandleTypeDef hspi4;
+DMA_HandleTypeDef hdma_spi4_rx;
+DMA_HandleTypeDef hdma_spi4_tx;
 
 /* USER CODE BEGIN PV */
 
@@ -55,10 +57,12 @@ SPI_HandleTypeDef hspi1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S2_Init(void);
 static void MX_I2S3_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_SPI4_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -95,11 +99,13 @@ int main(void) {
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
+	MX_DMA_Init();
 	MX_I2C1_Init();
 	MX_I2S2_Init();
 	MX_I2S3_Init();
 	MX_SPI1_Init();
 	MX_USB_DEVICE_Init();
+	MX_SPI4_Init();
 	/* USER CODE BEGIN 2 */
 	Start();
 	/* USER CODE END 2 */
@@ -296,6 +302,60 @@ static void MX_SPI1_Init(void) {
 }
 
 /**
+ * @brief SPI4 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_SPI4_Init(void) {
+
+	/* USER CODE BEGIN SPI4_Init 0 */
+
+	/* USER CODE END SPI4_Init 0 */
+
+	/* USER CODE BEGIN SPI4_Init 1 */
+
+	/* USER CODE END SPI4_Init 1 */
+	/* SPI4 parameter configuration*/
+	hspi4.Instance = SPI4;
+	hspi4.Init.Mode = SPI_MODE_MASTER;
+	hspi4.Init.Direction = SPI_DIRECTION_2LINES;
+	hspi4.Init.DataSize = SPI_DATASIZE_8BIT;
+	hspi4.Init.CLKPolarity = SPI_POLARITY_LOW;
+	hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
+	hspi4.Init.NSS = SPI_NSS_SOFT;
+	hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
+	hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
+	hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+	hspi4.Init.CRCPolynomial = 10;
+	if (HAL_SPI_Init(&hspi4) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN SPI4_Init 2 */
+
+	/* USER CODE END SPI4_Init 2 */
+
+}
+
+/**
+ * Enable DMA controller clock
+ */
+static void MX_DMA_Init(void) {
+
+	/* DMA controller clock enable */
+	__HAL_RCC_DMA2_CLK_ENABLE();
+
+	/* DMA interrupt init */
+	/* DMA2_Stream0_IRQn interrupt configuration */
+	HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+	/* DMA2_Stream1_IRQn interrupt configuration */
+	HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+
+}
+
+/**
  * @brief GPIO Initialization Function
  * @param None
  * @retval None
@@ -390,18 +450,18 @@ void Error_Handler(void) {
 
 #ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-	/* USER CODE BEGIN 6 */
+  /* USER CODE BEGIN 6 */
 	/* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-	/* USER CODE END 6 */
+  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
 
