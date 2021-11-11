@@ -23,6 +23,6 @@ float Max6675::readTemp(void){
 	if ((buf>>2) & 1){
 		return -1;
 	}else{
-		return (buf>>3)/4;
+		return (float)(buf>>3)/4;
 	}
 }

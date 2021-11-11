@@ -88,6 +88,14 @@ void Error_Handler(void);
 #define SPI1_MOSI_GPIO_Port GPIOA
 #define CLK_IN_Pin GPIO_PIN_10
 #define CLK_IN_GPIO_Port GPIOB
+#define LCD_DB4_Pin GPIO_PIN_8
+#define LCD_DB4_GPIO_Port GPIOD
+#define LCD_DB5_Pin GPIO_PIN_9
+#define LCD_DB5_GPIO_Port GPIOD
+#define LCD_DB6_Pin GPIO_PIN_10
+#define LCD_DB6_GPIO_Port GPIOD
+#define LCD_DB7_Pin GPIO_PIN_11
+#define LCD_DB7_GPIO_Port GPIOD
 #define LD4_Pin GPIO_PIN_12
 #define LD4_GPIO_Port GPIOD
 #define LD3_Pin GPIO_PIN_13
@@ -114,6 +122,12 @@ void Error_Handler(void);
 #define I2S3_SCK_GPIO_Port GPIOC
 #define I2S3_SD_Pin GPIO_PIN_12
 #define I2S3_SD_GPIO_Port GPIOC
+#define LCD_RS_Pin GPIO_PIN_1
+#define LCD_RS_GPIO_Port GPIOD
+#define LCD_RW_Pin GPIO_PIN_2
+#define LCD_RW_GPIO_Port GPIOD
+#define LCD_EN_Pin GPIO_PIN_3
+#define LCD_EN_GPIO_Port GPIOD
 #define Audio_RST_Pin GPIO_PIN_4
 #define Audio_RST_GPIO_Port GPIOD
 #define OTG_FS_OverCurrent_Pin GPIO_PIN_5
