@@ -6,6 +6,10 @@
 #define TEMP_MIN 100 //Minimum iron temperature
 #define POT_DZ 16    //Deadzone at potentiometer edges
 
+#define KP 50
+#define KI 5
+#define KD 300
+
 #define LCD_RS PD4
 #define LCD_RW PD3
 #define LCD_EN PD2
@@ -17,10 +21,15 @@
 #define POT_IN PD5 //Analog input from potentiometer
 #define FET_OU PA1 //MOSFET output
 #define BUZZER PA2 //Buzzer
+#define THERMOCOUPLE_J
 
 LiquidCrystal(lcd, LCD_RS, LCD_RW, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 uint8_t SPIRecvBuf[2];
+int16_t error = 0;
+int16_t ierror = 0;
+int16_t derror;
+int16_t lastError;
 
 float readTemp(void)
 {
@@ -56,7 +65,10 @@ void loop()
 {
   // put your main code here, to run repeatedly:
   float temperature = readTemp();
-  long settemp = map(analogRead(POT_IN), POT_DZ, 1023 - POT_DZ, TEMP_MIN, TEMP_MAX);
+  #ifdef THERMOCOUPLE_J
+  temperature = temperature*340/450;
+  #endif
+  uint16_t settemp = map(analogRead(POT_IN), POT_DZ, 1023 - POT_DZ, TEMP_MIN, TEMP_MAX);
   settemp = constrain(settemp, TEMP_MIN, TEMP_MAX);
   //lcd_clear();
   lcd_setCursor(7, 1);
@@ -66,6 +78,7 @@ void loop()
   {
     lcd_print_s("ERROR ");
     digitalWrite(FET_OU, LOW);
+    delay(250);
   }
   else
   {
@@ -74,17 +87,17 @@ void loop()
       lcd_print_s("0");
     }
     lcd_print_f(temperature);
-    //Begin control
-    if (temperature < settemp)
-    {
-      digitalWrite(FET_OU, HIGH);
-    }
-    else
-    {
-      digitalWrite(FET_OU, LOW);
-    }
+    lastError = error;
+    error = settemp - temperature;
+    ierror += error;
+    ierror = constrain(ierror, -250, 250);
+    derror = error - lastError;
+    int32_t pid = (KP*error + KI*ierror + KD*derror)/10;
+    pid = constrain(pid, 0, 250);
+    digitalWrite(FET_OU, HIGH);
+    delay(pid);
+    digitalWrite(FET_OU, LOW);
+    delay(250 - pid);
     //End control
   }
-
-  delay(250);
 }
